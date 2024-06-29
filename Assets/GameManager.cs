@@ -44,11 +44,12 @@ public class GameManager : MonoBehaviour
         {
             if (hit.collider.gameObject.GetComponent<Checker>() != null)
             {
-               TurnManager.Instance.CurrentChecker = hit.collider.gameObject.GetComponent<Checker>();
+                TurnManager.Instance.CurrentChecker = hit.collider.gameObject.GetComponent<Checker>();
             }
-
             Debug.LogWarning(TurnManager.Instance.CurrentChecker);
         }
+        else
+            yield return DetectChecker();
 
         yield return null;
     }
