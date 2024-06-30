@@ -43,7 +43,9 @@ public class TurnManager : MonoBehaviour
     public IEnumerator CheckValidEndNode(Checker checker)
     {
         if (checker.IsPlayer)
+        {
             yield return GameManager.Instance.DetectEndNode();
+        }
         /*else
         {
             GameManager.Instance.EndNode = checker.GetClosest(players, action);

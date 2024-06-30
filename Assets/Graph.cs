@@ -126,7 +126,8 @@ public class Graph : MonoBehaviour
 
         costs[start].gValue = 0;
         queue.Enqueue(costs[start]);
-
+        bool checkerIsKing = TurnManager.Instance.CurrentChecker.IsKing;
+        bool checkerIsPlayer = TurnManager.Instance.CurrentChecker.IsPlayer;
         while (queue.Count > 0)
         {
             PathNode currentNode = queue.Dequeue();
@@ -149,7 +150,26 @@ public class Graph : MonoBehaviour
                         if (!path.Contains(neighbour.Node))
                         {
                             if (neighbour.Node.CheckerInThisNode == null)
-                                path.Add(neighbour.Node);                           
+                            {
+                                if (!checkerIsKing && checkerIsPlayer)
+                                {
+                                    if (neighbour.Node.PositionInTheWorld.y - currentNode.Position.y > 0) //means he is moving forward
+                                    {
+                                        path.Add(neighbour.Node);
+                                    }
+                                }
+                                else if (!checkerIsKing && !checkerIsPlayer)
+                                {
+                                    if (neighbour.Node.PositionInTheWorld.y - currentNode.Position.y < 0) //means he is moving backward
+                                    {
+                                        path.Add(neighbour.Node);
+                                    }
+
+
+                                }
+                                else if(checkerIsKing)
+                                    path.Add(neighbour.Node);
+                            }
                         }
 
                         costs[currentNode.Node.GetNeighbour(edge)] = neighbour;

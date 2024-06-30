@@ -7,8 +7,16 @@ public class Checker : MonoBehaviour
     [SerializeField] private bool isPlayer;
     public bool IsPlayer { get { return isPlayer; } }
 
+    public bool IsKing { get; set; }
+
     public int movement;
     [SerializeField] private float lerpDuration;
+
+    private void Start()
+    {
+        IsKing = false;
+    }
+
     public virtual IEnumerator Move()
     {
         List<Node> path = Graph.Instance.FindPath(GameManager.Instance.CurrentNode, GameManager.Instance.EndNode);
