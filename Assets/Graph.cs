@@ -22,7 +22,7 @@ public class Graph : MonoBehaviour
         return nodes.Find(n => n.PositionInTheWorld == position);
     }
 
-    public List<Node> FindPath(Node start, Node end)
+    /*public List<Node> FindPath(Node start, Node end)
     {
         if (!nodes.Contains(start) || !nodes.Contains(end))
         {
@@ -102,7 +102,7 @@ public class Graph : MonoBehaviour
 
         path.Reverse();
         return path;
-    }
+    }*/
 
     private int CalculateHeuristic(Node start, Node end)
     {
@@ -141,8 +141,8 @@ public class Graph : MonoBehaviour
 
                 if (movementCost < neighbour.gValue)
                 {
-                    if (neighbour.Node.CheckerInThisNode == null)
-                        neighbour.gValue = movementCost;
+                    //if (neighbour.Node.CheckerInThisNode == null)
+                    neighbour.gValue = movementCost;
 
                     if (neighbour.gValue <= moveCount)
                     {
@@ -167,8 +167,52 @@ public class Graph : MonoBehaviour
 
 
                                 }
-                                else if(checkerIsKing)
+                                else
                                     path.Add(neighbour.Node);
+                            }
+                            else
+                            {
+                                int differenceX;
+                                int differenceY;
+
+                                foreach (Edge e in neighbour.Edges)
+                                {
+                                    differenceX = (int)e.NodeB.PositionInTheWorld.x - (int)currentNode.Position.x; //end minus start
+                                    differenceY = (int)e.NodeB.PositionInTheWorld.y - (int)currentNode.Position.y; //end minus start
+
+                                    if (!checkerIsKing && checkerIsPlayer)
+                                    {
+                                        if (differenceX > 0 && differenceY > 0) //means he is moving forward
+                                        {
+                                            if (e.NodeB.CheckerInThisNode == null)
+                                                path.Add(e.NodeB);
+                                        }
+                                        else if (differenceX < 0 && differenceY > 0)
+                                        {
+                                            if (e.NodeB.CheckerInThisNode == null)
+                                                path.Add(e.NodeB);
+                                        }
+                                    }
+                                    else if (!checkerIsKing && !checkerIsPlayer)
+                                    {
+                                        if (differenceX > 0 && differenceY < 0) //means he is moving forward
+                                        {
+                                            if (e.NodeB.CheckerInThisNode == null)
+                                                path.Add(e.NodeB);
+                                        }
+                                        else if (differenceX < 0 && differenceY < 0)
+                                        {
+                                            if (e.NodeB.CheckerInThisNode == null)
+                                                path.Add(e.NodeB);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (e.NodeB.CheckerInThisNode == null)
+                                            path.Add(e.NodeB);
+                                    }
+
+                                }
                             }
                         }
 

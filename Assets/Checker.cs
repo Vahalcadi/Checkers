@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Checker : MonoBehaviour
@@ -19,14 +18,15 @@ public class Checker : MonoBehaviour
 
     public virtual IEnumerator Move()
     {
-        List<Node> path = Graph.Instance.FindPath(GameManager.Instance.CurrentNode, GameManager.Instance.EndNode);
+        //List<Node> path = Graph.Instance.FindPath(GameManager.Instance.CurrentNode, GameManager.Instance.EndNode);
 
-        foreach (Node node in path)
+        /*foreach (Node node in path)
         {
             Debug.Log("enter Move Player");
-            yield return MoveEachNode(node);
-        }
+            yield return MoveEachNode(GameManager.Instance.EndNode);
+        }*/
 
+        yield return MoveEachNode(GameManager.Instance.EndNode);
         GameManager.Instance.CurrentNode = GameManager.Instance.EndNode;
         GameManager.Instance.EndNode.CheckerInThisNode = this;
         //HasMovedThisRound = true;
