@@ -6,7 +6,7 @@ public class Checker : MonoBehaviour
     [SerializeField] private bool isPlayer;
     public bool IsPlayer { get { return isPlayer; } }
 
-    public bool IsKing { get; set; }
+    public bool IsKing;
 
     public int movement;
     [SerializeField] private float lerpDuration;
