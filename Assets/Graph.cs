@@ -170,7 +170,6 @@ public class Graph : MonoBehaviour
                             }
                             else
                             {
-
                                 if (checkerIsKing)
                                 {
                                     int differenceX;
@@ -185,7 +184,10 @@ public class Graph : MonoBehaviour
                                    
                                     Debug.Log(nodeToAdd.PositionInTheWorld);
 
-                                    path.Add(nodeToAdd);
+                                    if(!neighbour.Node.CheckerInThisNode.IsPlayer && TurnManager.Instance.CurrentChecker.IsPlayer)
+                                        path.Add(nodeToAdd);
+                                    else if(neighbour.Node.CheckerInThisNode.IsPlayer && !TurnManager.Instance.CurrentChecker.IsPlayer)
+                                        path.Add(nodeToAdd);
                                 }
                                 
                             }
