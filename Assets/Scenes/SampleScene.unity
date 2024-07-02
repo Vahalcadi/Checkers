@@ -2322,6 +2322,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Red Checker
       objectReference: {fileID: 0}
+    - target: {fileID: 9056201338245223317, guid: 67f7dd6539fa662478afbdb4b54aeae7, type: 3}
+      propertyPath: isPlayer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

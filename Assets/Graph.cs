@@ -164,55 +164,30 @@ public class Graph : MonoBehaviour
                                     {
                                         path.Add(neighbour.Node);
                                     }
-
-
                                 }
                                 else
                                     path.Add(neighbour.Node);
                             }
                             else
                             {
-                                int differenceX;
-                                int differenceY;
 
-                                foreach (Edge e in neighbour.Edges)
+                                if (checkerIsKing)
                                 {
-                                    differenceX = (int)e.NodeB.PositionInTheWorld.x - (int)currentNode.Position.x; //end minus start
-                                    differenceY = (int)e.NodeB.PositionInTheWorld.y - (int)currentNode.Position.y; //end minus start
+                                    int differenceX;
+                                    int differenceY;
 
-                                    if (!checkerIsKing && checkerIsPlayer)
-                                    {
-                                        if (differenceX > 0 && differenceY > 0) //means he is moving forward
-                                        {
-                                            if (e.NodeB.CheckerInThisNode == null)
-                                                path.Add(e.NodeB);
-                                        }
-                                        else if (differenceX < 0 && differenceY > 0)
-                                        {
-                                            if (e.NodeB.CheckerInThisNode == null)
-                                                path.Add(e.NodeB);
-                                        }
-                                    }
-                                    else if (!checkerIsKing && !checkerIsPlayer)
-                                    {
-                                        if (differenceX > 0 && differenceY < 0) //means he is moving forward
-                                        {
-                                            if (e.NodeB.CheckerInThisNode == null)
-                                                path.Add(e.NodeB);
-                                        }
-                                        else if (differenceX < 0 && differenceY < 0)
-                                        {
-                                            if (e.NodeB.CheckerInThisNode == null)
-                                                path.Add(e.NodeB);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (e.NodeB.CheckerInThisNode == null)
-                                            path.Add(e.NodeB);
-                                    }
+                                    differenceX = (int)neighbour.Position.x - (int)start.PositionInTheWorld.x;
+                                    differenceY = (int)neighbour.Position.y - (int)start.PositionInTheWorld.y;
 
+                                    Vector2 position = new Vector2(differenceX, differenceY);
+
+                                    Node nodeToAdd = neighbour.Edges.Find(e => e.ReturnNodeFromPosition(neighbour.Position + position) != null).ReturnNodeFromPosition(neighbour.Position + position);
+                                   
+                                    Debug.Log(nodeToAdd.PositionInTheWorld);
+
+                                    path.Add(nodeToAdd);
                                 }
+                                
                             }
                         }
 
