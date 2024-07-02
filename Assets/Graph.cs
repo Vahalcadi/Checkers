@@ -22,97 +22,6 @@ public class Graph : MonoBehaviour
         return nodes.Find(n => n.PositionInTheWorld == position);
     }
 
-    /*public List<Node> FindPath(Node start, Node end)
-    {
-        if (!nodes.Contains(start) || !nodes.Contains(end))
-        {
-            Debug.LogError("not valid");
-            Debug.Log("start: " + nodes.Contains(start));
-            Debug.Log("end: " + nodes.Contains(end));
-            return null;
-        }
-
-        Dictionary<Node, Node> map = new Dictionary<Node, Node>();
-        Dictionary<Node, PathNode> costs = new Dictionary<Node, PathNode>();
-        PriorityQueue priorityQueue = new PriorityQueue();
-
-        foreach (Node node in nodes)
-        {
-            costs[node] = new PathNode(node);
-        }
-
-        costs[start].gValue = 0;
-        priorityQueue.Enqueue(costs[start]);
-
-        while (priorityQueue.Count > 0)
-        {
-            PathNode currentNode = priorityQueue.Dequeue();
-
-            if (currentNode.Position == end.PositionInTheWorld)
-                break;
-
-            foreach (Edge edge in currentNode.Edges)
-            {
-                PathNode neighbour = costs[currentNode.Node.GetNeighbour(edge)];
-
-                //int movementCost = currentNode.gValue + CalculateHeuristic(currentNode, neighbour);
-                int movementCost = currentNode.gValue + edge.Weight;
-
-                if (movementCost < neighbour.gValue)
-                {
-                    neighbour.gValue = movementCost;
-                    neighbour.hValue = CalculateHeuristic(neighbour.Node, end);
-
-                    if (neighbour.Node.CheckerInThisNode == null)
-                    {
-                        map[neighbour.Node] = currentNode.Node;
-
-                        costs[currentNode.Node.GetNeighbour(edge)] = neighbour;
-                        priorityQueue.Enqueue(neighbour);
-                    }
-
-                }
-
-            }
-
-        }
-
-        List<Node> path = ReconstructPath(ref map, start, end);
-        return path;
-    }
-
-    private List<Node> ReconstructPath(ref Dictionary<Node, Node> map, in Node startingPoint, in Node endPoint)
-    {
-        List<Node> path = new List<Node>();
-        Node current = endPoint;
-
-        Debug.Log("Starting Point: " + startingPoint);
-
-
-        while (current != startingPoint)
-        {
-            if (current.CheckerInThisNode == null)
-            {
-                path.Add(current);
-            }
-            current = map[current];
-        }
-
-        // path.Add(startingPoint);
-
-        path.Reverse();
-        return path;
-    }*/
-
-    private int CalculateHeuristic(Node start, Node end)
-    {
-        var distance = Mathf.Abs(end.PositionInTheWorld.x - start.PositionInTheWorld.x) + Mathf.Abs(end.PositionInTheWorld.y - start.PositionInTheWorld.y);
-        //D2 * (Min(Abs(X1 - X2), Abs(Y1 - Y2))
-
-        //Mathf.Min(Mathf.Abs(end.PositionInTheWorld.x - start.PositionInTheWorld.x), Mathf.Abs(end.PositionInTheWorld.y - start.PositionInTheWorld.y));
-        return (int)distance;
-    }
-
     public List<Node> GetTraversableNodes(Node start, int moveCount)
     {
         List<Node> path = new List<Node>();
@@ -170,25 +79,38 @@ public class Graph : MonoBehaviour
                             }
                             else
                             {
-                                if (checkerIsKing)
-                                {
-                                    int differenceX;
-                                    int differenceY;
+                                
+                                int differenceX;
+                                int differenceY;
 
-                                    differenceX = (int)neighbour.Position.x - (int)start.PositionInTheWorld.x;
-                                    differenceY = (int)neighbour.Position.y - (int)start.PositionInTheWorld.y;
+                                differenceX = (int)neighbour.Position.x - (int)start.PositionInTheWorld.x;
+                                differenceY = (int)neighbour.Position.y - (int)start.PositionInTheWorld.y;
 
-                                    Vector2 position = new Vector2(differenceX, differenceY);
+                                Vector2 position = new Vector2(differenceX, differenceY);
 
-                                    Node nodeToAdd = neighbour.Edges.Find(e => e.ReturnNodeFromPosition(neighbour.Position + position) != null).ReturnNodeFromPosition(neighbour.Position + position);
+                                Node nodeToAdd = neighbour.Edges.Find(e => e.ReturnNodeFromPosition(neighbour.Position + position) != null).ReturnNodeFromPosition(neighbour.Position + position);
                                    
-                                    Debug.Log(nodeToAdd.PositionInTheWorld);
+                                Debug.Log(nodeToAdd.PositionInTheWorld);
 
-                                    if(!neighbour.Node.CheckerInThisNode.IsPlayer && TurnManager.Instance.CurrentChecker.IsPlayer)
-                                        path.Add(nodeToAdd);
-                                    else if(neighbour.Node.CheckerInThisNode.IsPlayer && !TurnManager.Instance.CurrentChecker.IsPlayer)
+
+                                if (differenceY < 0 && !checkerIsKing) //means checker is going backwards
+                                {
+                                    if (neighbour.Node.CheckerInThisNode.IsPlayer && !TurnManager.Instance.CurrentChecker.IsPlayer) // means enemy checker is playing
                                         path.Add(nodeToAdd);
                                 }
+                                else if (differenceY > 0 && !checkerIsKing) //means checker is going forward
+                                {
+                                    if (!neighbour.Node.CheckerInThisNode.IsPlayer && TurnManager.Instance.CurrentChecker.IsPlayer) // means player checker is playing
+                                        path.Add(nodeToAdd);
+                                }
+                                else if (checkerIsKing) // means checker can go forward or backwards
+                                {
+                                    if (!neighbour.Node.CheckerInThisNode.IsPlayer && TurnManager.Instance.CurrentChecker.IsPlayer) // means player checker is playing
+                                        path.Add(nodeToAdd);
+                                    else if (neighbour.Node.CheckerInThisNode.IsPlayer && !TurnManager.Instance.CurrentChecker.IsPlayer) // means enemy checker is playing
+                                        path.Add(nodeToAdd);
+                                }
+                                
                                 
                             }
                         }
@@ -238,126 +160,4 @@ public class PathNode
     {
         return new PathNode(v);
     }
-}
-
-public class PriorityQueue
-{
-    List<PathNode> nodes;
-    private int count;
-
-    public int Count { get { return count; } }
-
-    public PriorityQueue()
-    {
-        nodes = new List<PathNode>();
-        count = 0;
-    }
-
-    public void Enqueue(PathNode node)
-    {
-        nodes.Add(node);
-        count++;
-        ShiftUp(count - 1);
-    }
-
-    private void ShiftUp(int index)
-    {
-        int parentIndex;
-        PathNode temp;
-        if (index != 0)
-        {
-            parentIndex = GetParentIndex(index);
-            if (nodes[parentIndex].FValue > nodes[index].FValue)
-            {
-                temp = nodes[parentIndex];
-                nodes[parentIndex] = nodes[index];
-                nodes[index] = temp;
-                ShiftUp(parentIndex);
-            }
-            else if (nodes[parentIndex].FValue == nodes[index].FValue && nodes[parentIndex].hValue > nodes[index].hValue)
-            {
-                temp = nodes[parentIndex];
-                nodes[parentIndex] = nodes[index];
-                nodes[index] = temp;
-                ShiftUp(parentIndex);
-            }
-        }
-    }
-
-    public PathNode Dequeue()
-    {
-        PathNode obj;
-        if (count == 0)
-        {
-            throw new System.Exception("Queue is empty");
-        }
-        else
-        {
-            obj = nodes[0];
-            nodes[0] = nodes[count - 1];
-            count--;
-            if (count > 0)
-            {
-                ShiftDown(0);
-            }
-        }
-        nodes.RemoveAt(count);
-        return obj;
-    }
-
-    private void ShiftDown(int nodeIndex)
-    {
-        int leftChildIndex, rightChildIndex, minIndex;
-        PathNode temp;
-        leftChildIndex = GetLeftChildIndex(nodeIndex);
-        rightChildIndex = GetRightChildIndex(nodeIndex);
-        if (rightChildIndex >= count)
-        {
-            if (leftChildIndex >= count)
-                return;
-
-            minIndex = leftChildIndex;
-
-        }
-        else
-        {
-            if (nodes[leftChildIndex].FValue < nodes[rightChildIndex].FValue)
-                minIndex = leftChildIndex;
-            else if (nodes[leftChildIndex].FValue == nodes[rightChildIndex].FValue && nodes[leftChildIndex].hValue < nodes[rightChildIndex].hValue)
-                minIndex = leftChildIndex;
-            else
-                minIndex = rightChildIndex;
-        }
-        if (nodes[nodeIndex].FValue > nodes[minIndex].FValue)
-        {
-            temp = nodes[minIndex];
-            nodes[minIndex] = nodes[nodeIndex];
-            nodes[nodeIndex] = temp;
-            ShiftDown(minIndex);
-        }
-        else if (nodes[nodeIndex].FValue > nodes[minIndex].FValue && nodes[nodeIndex].hValue > nodes[minIndex].hValue)
-        {
-            temp = nodes[minIndex];
-            nodes[minIndex] = nodes[nodeIndex];
-            nodes[nodeIndex] = temp;
-            ShiftDown(minIndex);
-        }
-    }
-
-    private int GetRightChildIndex(int index)
-    {
-        return (2 * index) + 2;
-    }
-
-    private int GetLeftChildIndex(int index)
-    {
-        return (2 * index) + 1;
-    }
-
-    private int GetParentIndex(int index)
-    {
-        return (index - 1) / 2;
-    }
-
-
 }

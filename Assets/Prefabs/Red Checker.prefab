@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayer: 0
+  IsKing: 0
   movement: 1
   lerpDuration: 0.5
 --- !u!58 &7640027667201723639
