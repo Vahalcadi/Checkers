@@ -26,9 +26,12 @@ public class Checker : MonoBehaviour
             yield return MoveEachNode(GameManager.Instance.EndNode);
         }*/
 
+        GameManager.Instance.CurrentlyMovingChecker = this;
         yield return MoveEachNode(GameManager.Instance.EndNode);
         GameManager.Instance.CurrentNode = GameManager.Instance.EndNode;
         GameManager.Instance.EndNode.CheckerInThisNode = this;
+        GameManager.Instance.CurrentlyMovingChecker = null;
+
         //HasMovedThisRound = true;
     }
 
@@ -55,5 +58,23 @@ public class Checker : MonoBehaviour
         Vector2 distance = new Vector2(transform.position.x, transform.position.y);
 
         return Graph.Instance.GetNode(distance);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+
+        if (GameManager.Instance.CurrentlyMovingChecker == this)
+        {
+            if (collision.CompareTag("Enemy"))
+            {
+                collision.gameObject.SetActive(false);
+                Debug.Log("pawn disabled: " + collision.gameObject.name);
+            }
+            else if (collision.CompareTag("Player"))
+            {
+                collision.gameObject.SetActive(false);
+                Debug.Log("pawn disabled: " + collision.gameObject.name);
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] LayerMask CheckerMask;
     public Node CurrentNode { get; set; }
     public Node EndNode { get; set; }
-    public Checker CheckerToCapture { get; set; }
+    public Checker CurrentlyMovingChecker { get; set; } //used to manage the capture interaction
 
     private void Awake()
     {
