@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Color endNodeSelectedColour;
     [SerializeField] LayerMask NodeMask;
     [SerializeField] LayerMask CheckerMask;
+
+    [SerializeField] private Checker[] enemyCheckers;
+
     public Node CurrentNode { get; set; }
     public Node EndNode { get; set; }
     public Checker CurrentlyMovingChecker { get; set; } //used to manage the capture interaction
@@ -127,11 +130,30 @@ public class GameManager : MonoBehaviour
         return path;
     }
 
-    public void HiglightNodes(List<Node> nodes)
+    
+    public void EndGame()
     {
-        foreach (Node node in nodes)
-        {
-            node.gameObject.GetComponent<SpriteRenderer>().color = traversableColour;
-        }
+        if (UIManager.Instance.WhiteCheckerCounter <= 0)
+            Debug.Log("you lost");
+        else if (UIManager.Instance.BlackCheckerCounter <= 0)
+            Debug.Log("you won");
     }
+
+    public List<Node> EnemySelectFirstMoveablePawn()
+    {
+        List<Node> path = new List<Node>();
+        foreach (Checker checker in enemyCheckers)
+        {
+            path = GetTraversableNodes(checker);
+
+            if (path.Count > 0)
+            {
+                CurrentlyMovingChecker = checker;
+                return path;
+            }
+        }
+
+        return null;
+    }
+
 }

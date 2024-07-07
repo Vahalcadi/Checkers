@@ -40,6 +40,21 @@ public class TurnManager : MonoBehaviour
         battleState = BattleState.NoAction;
     }
 
+
+    public IEnumerator EnemyMoveSelection()
+    {
+        battleState = BattleState.Move;
+
+        traversableNodes = GameManager.Instance.EnemySelectFirstMoveablePawn();
+
+        battleState = BattleState.Busy;
+
+        yield return CheckValidEndNode(CurrentChecker);
+
+        battleState = BattleState.NoAction;
+    }
+
+
     public IEnumerator CheckValidEndNode(Checker checker)
     {
         if (checker.IsPlayer)

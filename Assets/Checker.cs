@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Checker : MonoBehaviour
@@ -14,6 +15,7 @@ public class Checker : MonoBehaviour
     private void Start()
     {
         IsKing = false;
+        UIManager.Instance.InitialiseCounters(this);
     }
 
     public virtual IEnumerator Move()
@@ -31,6 +33,11 @@ public class Checker : MonoBehaviour
         GameManager.Instance.CurrentNode = GameManager.Instance.EndNode;
         GameManager.Instance.EndNode.CheckerInThisNode = this;
         GameManager.Instance.CurrentlyMovingChecker = null;
+
+        if(isPlayer && transform.position.y == 7)
+            IsKing = true;
+        else if(!isPlayer && transform.position.y == 0)
+            IsKing = true;
 
         //HasMovedThisRound = true;
     }
@@ -67,14 +74,43 @@ public class Checker : MonoBehaviour
         {
             if (collision.CompareTag("Enemy"))
             {
+                Vector2 collisionTransform = new Vector2(collision.transform.position.x, collision.transform.position.y);
+
+                Debug.Log(collisionTransform);
+
+                Graph.Instance.Nodes.Find(n => n.PositionInTheWorld == collisionTransform).CheckerInThisNode = null;
+
                 collision.gameObject.SetActive(false);
                 Debug.Log("pawn disabled: " + collision.gameObject.name);
             }
             else if (collision.CompareTag("Player"))
             {
+                Vector2 collisionTransform = new Vector2(collision.transform.position.x, collision.transform.position.y);
+
+                Debug.Log(collisionTransform);
+
+                Graph.Instance.Nodes.Find(n => n.PositionInTheWorld == collisionTransform).CheckerInThisNode = null;
+
                 collision.gameObject.SetActive(false);
                 Debug.Log("pawn disabled: " + collision.gameObject.name);
             }
         }
+    }
+
+    public Node GetFarthestNode(Checker checker, List<Node> path)
+    {
+        float positionY = int.MaxValue;
+        Node nodeToReturn = null;
+        foreach (Node node in path)
+        {
+            if(node.PositionInTheWorld.y < positionY)
+                nodeToReturn = node;
+        }
+        return nodeToReturn;
+    }
+
+    private void OnDisable()
+    {
+        UIManager.Instance.UpdateCounters(this);
     }
 }
