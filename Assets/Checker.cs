@@ -80,7 +80,7 @@ public class Checker : MonoBehaviour
 
                 Graph.Instance.Nodes.Find(n => n.PositionInTheWorld == collisionTransform).CheckerInThisNode = null;
 
-                collision.gameObject.SetActive(false);
+                Destroy(collision.gameObject);
                 Debug.Log("pawn disabled: " + collision.gameObject.name);
             }
             else if (collision.CompareTag("Player"))
@@ -92,12 +92,14 @@ public class Checker : MonoBehaviour
                 Graph.Instance.Nodes.Find(n => n.PositionInTheWorld == collisionTransform).CheckerInThisNode = null;
 
                 collision.gameObject.SetActive(false);
+                Destroy(collision.gameObject);
+
                 Debug.Log("pawn disabled: " + collision.gameObject.name);
             }
         }
     }
 
-    public Node GetFarthestNode(Checker checker, List<Node> path)
+    public Node GetFarthestNode(List<Node> path)
     {
         float positionY = int.MaxValue;
         Node nodeToReturn = null;
@@ -109,8 +111,11 @@ public class Checker : MonoBehaviour
         return nodeToReturn;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         UIManager.Instance.UpdateCounters(this);
+
+        if(!isPlayer)
+            GameManager.Instance.enemyCheckers.Remove(this);
     }
 }

@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public enum BattleState
+public enum GameState
 {
     NoAction, Move, Pass, Busy
 }
 public class TurnManager : MonoBehaviour
 {
     public static TurnManager Instance;
-    private BattleState battleState;
+    private GameState gameState;
     [HideInInspector] public List<Node> traversableNodes = new List<Node>();
     public Checker CurrentChecker { get; set; }
 
@@ -27,31 +27,31 @@ public class TurnManager : MonoBehaviour
 
     public IEnumerator PlayerMoveSelection()
     {
-        battleState = BattleState.Move;
+        gameState = GameState.Move;
 
         yield return GameManager.Instance.DetectChecker();
        
         traversableNodes = GameManager.Instance.GetTraversableNodes(CurrentChecker);
 
-        battleState = BattleState.Busy;
+        gameState = GameState.Busy;
 
         yield return CheckValidEndNode(CurrentChecker);
 
-        battleState = BattleState.NoAction;
+        gameState = GameState.NoAction;
     }
 
 
     public IEnumerator EnemyMoveSelection()
     {
-        battleState = BattleState.Move;
+        gameState = GameState.Move;
 
         traversableNodes = GameManager.Instance.EnemySelectFirstMoveablePawn();
 
-        battleState = BattleState.Busy;
+        gameState = GameState.Busy;
 
         yield return CheckValidEndNode(CurrentChecker);
 
-        battleState = BattleState.NoAction;
+        gameState = GameState.NoAction;
     }
 
 
@@ -61,16 +61,16 @@ public class TurnManager : MonoBehaviour
         {
             yield return GameManager.Instance.DetectEndNode();
         }
-        /*else
+        else
         {
-            GameManager.Instance.EndNode = checker.GetClosest(players, action);
+            GameManager.Instance.EndNode = checker.GetFarthestNode(traversableNodes);
 
-            if ((checker as Enemy).CannotMove && action == BattleState.Move)
+            /*if ((checker as Enemy).CannotMove && action == BattleState.Move)
             {
                 GameManager.Instance.ResetTraversableNodes(traversableNodes);
                 yield break;
-            }
-        }*/
+            }*/
+        }
 
         if (traversableNodes.Contains(GameManager.Instance.EndNode))
         {
@@ -83,9 +83,11 @@ public class TurnManager : MonoBehaviour
                      
             GameManager.Instance.ClearEndNodeHighlight();
 
-            /**REMOVE FROM HERE**/
-            StartCoroutine(PlayerMoveSelection());
-            ////////////////////////
+            if(CurrentChecker.IsPlayer)
+                StartCoroutine(EnemyMoveSelection());
+            else
+                StartCoroutine(PlayerMoveSelection());
+
         }
         else
         {

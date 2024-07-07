@@ -11,12 +11,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] LayerMask NodeMask;
     [SerializeField] LayerMask CheckerMask;
 
-    [SerializeField] private Checker[] enemyCheckers;
+    public List<Checker> enemyCheckers;
 
     public Node CurrentNode { get; set; }
     public Node EndNode { get; set; }
     public Checker CurrentlyMovingChecker { get; set; } //used to manage the capture interaction
-
     private void Awake()
     {
         if (Instance != null)
@@ -144,16 +143,14 @@ public class GameManager : MonoBehaviour
         List<Node> path = new List<Node>();
         foreach (Checker checker in enemyCheckers)
         {
+            TurnManager.Instance.CurrentChecker = checker;
             path = GetTraversableNodes(checker);
 
             if (path.Count > 0)
-            {
-                CurrentlyMovingChecker = checker;
-                return path;
-            }
+                break;         
         }
 
-        return null;
+        return path;
     }
 
 }
