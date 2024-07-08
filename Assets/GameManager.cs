@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
             Destroy(Instance.gameObject);
         else
             Instance = this;
+
     }
 
     private void Start()
@@ -160,15 +162,18 @@ public class GameManager : MonoBehaviour
         if (WhiteCheckerCounter <= 0)
         {
             Debug.Log("you lost");
-            UIManager.OpenEndgameScreen(true);
+            UIManager.OpenEndgameScreen(false);
         }
         else if (BlackCheckerCounter <= 0)
         {
             Debug.Log("you won");
-            UIManager.OpenEndgameScreen(false);
+            UIManager.OpenEndgameScreen(true);
         }
+    }
 
-
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public List<Node> EnemySelectRandomMoveablePawn()
