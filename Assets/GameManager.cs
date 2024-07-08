@@ -158,9 +158,17 @@ public class GameManager : MonoBehaviour
     public void EndGame()
     {
         if (WhiteCheckerCounter <= 0)
+        {
             Debug.Log("you lost");
+            UIManager.OpenEndgameScreen(true);
+        }
         else if (BlackCheckerCounter <= 0)
+        {
             Debug.Log("you won");
+            UIManager.OpenEndgameScreen(false);
+        }
+
+
     }
 
     public List<Node> EnemySelectRandomMoveablePawn()

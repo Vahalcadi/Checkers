@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public TextMeshProUGUI WhiteCheckerCounterText;
-    public TextMeshProUGUI BlackCheckerCounterText;
+    [SerializeField] private TextMeshProUGUI WhiteCheckerCounterText;
+    [SerializeField] private TextMeshProUGUI BlackCheckerCounterText;
+
+    [SerializeField] private GameObject EndGameScreen;
+    [SerializeField] private TextMeshProUGUI ResultText;
 
     public void InitialiseCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
     {
@@ -34,5 +37,15 @@ public class UIManager : MonoBehaviour
         }
 
         GameManager.Instance.EndGame();
+    }
+
+    public void OpenEndgameScreen(bool won)
+    {
+        if (won)
+            ResultText.text = "Player Wins";
+        else
+            ResultText.text = "AI Wins";
+
+        EndGameScreen.SetActive(true);
     }
 }
