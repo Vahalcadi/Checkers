@@ -1,9 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
+    public static Action<Checker> OnCheckerInitialisation;
+    public static Action<Checker> OnCheckerDestroyed;
+
     public static GameManager Instance;
     [SerializeField] private Color traversableColour;
     [SerializeField] private Color defaultColour;
@@ -11,7 +16,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] LayerMask NodeMask;
     [SerializeField] LayerMask CheckerMask;
 
-    public List<Checker> enemyCheckers;
+    [SerializeField] private UIManager UIManager;
+
+    private int WhiteCheckerCounter;
+    private int BlackCheckerCounter;
+
+    [HideInInspector] public List<Checker> enemyCheckers;
 
     public Node CurrentNode { get; set; }
     public Node EndNode { get; set; }
@@ -129,28 +139,63 @@ public class GameManager : MonoBehaviour
         return path;
     }
 
-    
+    public void SetCheckersUI(Checker checker)
+    {
+        if (!checker.IsPlayer)
+            enemyCheckers.Add(checker);
+
+        UIManager.InitialiseCounters(checker, ref WhiteCheckerCounter, ref BlackCheckerCounter);
+    }
+
+    public void UpdateUI(Checker checker)
+    {
+        if (!checker.IsPlayer)
+            enemyCheckers.Remove(checker);
+
+        UIManager.UpdateCounters(checker, ref WhiteCheckerCounter, ref BlackCheckerCounter);
+    }
+
     public void EndGame()
     {
-        if (UIManager.Instance.WhiteCheckerCounter <= 0)
+        if (WhiteCheckerCounter <= 0)
             Debug.Log("you lost");
-        else if (UIManager.Instance.BlackCheckerCounter <= 0)
+        else if (BlackCheckerCounter <= 0)
             Debug.Log("you won");
     }
 
-    public List<Node> EnemySelectFirstMoveablePawn()
+    public List<Node> EnemySelectRandomMoveablePawn()
     {
         List<Node> path = new List<Node>();
+        List<Checker> checkers = new List<Checker>();
+        Dictionary<Checker, List<Node>> dictionary = new Dictionary<Checker, List<Node>>();
+
         foreach (Checker checker in enemyCheckers)
         {
             TurnManager.Instance.CurrentChecker = checker;
             path = GetTraversableNodes(checker);
-
             if (path.Count > 0)
-                break;         
+            {
+                dictionary[checker] = path;
+                ResetTraversableNodes(path);
+                checkers.Add(checker);
+            }
         }
 
-        return path;
+        int random = Random.Range(0, dictionary.Count);
+        TurnManager.Instance.CurrentChecker = checkers[random];
+        CurrentNode = TurnManager.Instance.CurrentChecker.GetCurrentNode();
+        return dictionary[checkers[random]];
     }
 
+    private void OnEnable()
+    {
+        OnCheckerInitialisation += SetCheckersUI;
+        OnCheckerDestroyed += UpdateUI;
+    }
+
+    private void OnDisable()
+    {
+        OnCheckerInitialisation -= SetCheckersUI;
+        OnCheckerDestroyed -= UpdateUI;
+    }
 }

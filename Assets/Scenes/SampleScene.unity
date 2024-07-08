@@ -599,6 +599,7 @@ GameObject:
   - component: {fileID: 433119667}
   - component: {fileID: 433119666}
   - component: {fileID: 433119668}
+  - component: {fileID: 433119669}
   m_Layer: 0
   m_Name: MANAGERS
   m_TagString: Untagged
@@ -627,10 +628,8 @@ MonoBehaviour:
   CheckerMask:
     serializedVersion: 2
     m_Bits: 128
-  enemyCheckers:
-  - {fileID: 1224741890}
-  - {fileID: 303338096}
-  - {fileID: 486194482}
+  UIManager: {fileID: 433119669}
+  enemyCheckers: []
 --- !u!4 &433119667
 Transform:
   m_ObjectHideFlags: 0
@@ -659,6 +658,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   traversableNodes: []
+--- !u!114 &433119669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433119665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3addda7a36c35984693e2d7365281ff5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WhiteCheckerCounterText: {fileID: 145749695}
+  BlackCheckerCounterText: {fileID: 2108954424}
 --- !u!1 &438136593
 GameObject:
   m_ObjectHideFlags: 0
@@ -2144,7 +2157,6 @@ GameObject:
   - component: {fileID: 1513938690}
   - component: {fileID: 1513938689}
   - component: {fileID: 1513938688}
-  - component: {fileID: 1513938692}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2236,22 +2248,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1513938692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1513938687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3addda7a36c35984693e2d7365281ff5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WhiteCheckerCounter: 0
-  BlackCheckerCounter: 0
-  WhiteCheckerCounterText: {fileID: 145749695}
-  BlackCheckerCounterText: {fileID: 2108954424}
 --- !u!1001 &1557581298
 PrefabInstance:
   m_ObjectHideFlags: 0

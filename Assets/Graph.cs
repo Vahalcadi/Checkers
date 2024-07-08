@@ -79,7 +79,7 @@ public class Graph : MonoBehaviour
                             }
                             else
                             {
-                                
+
                                 int differenceX;
                                 int differenceY;
 
@@ -87,9 +87,16 @@ public class Graph : MonoBehaviour
                                 differenceY = (int)neighbour.Position.y - (int)start.PositionInTheWorld.y;
 
                                 Vector2 position = new Vector2(differenceX, differenceY);
+                                Node nodeToAdd = null;
 
-                                Node nodeToAdd = neighbour.Edges.Find(e => e.ReturnNodeFromPosition(neighbour.Position + position) != null).ReturnNodeFromPosition(neighbour.Position + position);
-                                   
+                                if (neighbour.Edges.Find(e => e.ReturnNodeFromPosition(neighbour.Position + position) != null) == null)
+                                    continue;
+
+                                nodeToAdd = neighbour.Edges.Find(e => e.ReturnNodeFromPosition(neighbour.Position + position) != null).ReturnNodeFromPosition(neighbour.Position + position);
+
+                                if (nodeToAdd.CheckerInThisNode != null)
+                                    continue;
+
                                 Debug.Log(nodeToAdd.PositionInTheWorld);
 
 
@@ -110,8 +117,8 @@ public class Graph : MonoBehaviour
                                     else if (neighbour.Node.CheckerInThisNode.IsPlayer && !TurnManager.Instance.CurrentChecker.IsPlayer) // means enemy checker is playing
                                         path.Add(nodeToAdd);
                                 }
-                                
-                                
+
+
                             }
                         }
 

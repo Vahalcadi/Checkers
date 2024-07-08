@@ -1,26 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [HideInInspector] public int WhiteCheckerCounter;
-    [HideInInspector] public int BlackCheckerCounter;
-
     public TextMeshProUGUI WhiteCheckerCounterText;
     public TextMeshProUGUI BlackCheckerCounterText;
 
-    public static UIManager Instance;
-    private void Awake()
-    {
-        if(Instance != null)
-            Destroy(Instance.gameObject);
-        else 
-            Instance = this;
-    }
-
-    public void InitialiseCounters(Checker checker)
+    public void InitialiseCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
     {
         if (checker.IsPlayer)
         {
@@ -34,7 +20,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateCounters(Checker checker)
+    public void UpdateCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
     {
         if (checker.IsPlayer)
         {

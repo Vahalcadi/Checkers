@@ -30,7 +30,7 @@ public class TurnManager : MonoBehaviour
         gameState = GameState.Move;
 
         yield return GameManager.Instance.DetectChecker();
-       
+
         traversableNodes = GameManager.Instance.GetTraversableNodes(CurrentChecker);
 
         gameState = GameState.Busy;
@@ -45,7 +45,7 @@ public class TurnManager : MonoBehaviour
     {
         gameState = GameState.Move;
 
-        traversableNodes = GameManager.Instance.EnemySelectFirstMoveablePawn();
+        traversableNodes = GameManager.Instance.EnemySelectRandomMoveablePawn();
 
         gameState = GameState.Busy;
 
@@ -63,7 +63,7 @@ public class TurnManager : MonoBehaviour
         }
         else
         {
-            GameManager.Instance.EndNode = checker.GetFarthestNode(traversableNodes);
+            GameManager.Instance.EndNode = checker.GetRandomNode(traversableNodes);
 
             /*if ((checker as Enemy).CannotMove && action == BattleState.Move)
             {
@@ -80,10 +80,10 @@ public class TurnManager : MonoBehaviour
 
             GameManager.Instance.CurrentNode.CheckerInThisNode = null;
             yield return checker.Move();
-                     
+
             GameManager.Instance.ClearEndNodeHighlight();
 
-            if(CurrentChecker.IsPlayer)
+            if (CurrentChecker.IsPlayer)
                 StartCoroutine(EnemyMoveSelection());
             else
                 StartCoroutine(PlayerMoveSelection());

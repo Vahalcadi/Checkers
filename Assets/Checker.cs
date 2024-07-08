@@ -15,7 +15,7 @@ public class Checker : MonoBehaviour
     private void Start()
     {
         IsKing = false;
-        UIManager.Instance.InitialiseCounters(this);
+        GameManager.OnCheckerInitialisation?.Invoke(this);
     }
 
     public virtual IEnumerator Move()
@@ -29,14 +29,15 @@ public class Checker : MonoBehaviour
         }*/
 
         GameManager.Instance.CurrentlyMovingChecker = this;
+        GameManager.Instance.CurrentNode.CheckerInThisNode = null;
         yield return MoveEachNode(GameManager.Instance.EndNode);
         GameManager.Instance.CurrentNode = GameManager.Instance.EndNode;
         GameManager.Instance.EndNode.CheckerInThisNode = this;
         GameManager.Instance.CurrentlyMovingChecker = null;
 
-        if(isPlayer && transform.position.y == 7)
+        if (isPlayer && transform.position.y == 7)
             IsKing = true;
-        else if(!isPlayer && transform.position.y == 0)
+        else if (!isPlayer && transform.position.y == 0)
             IsKing = true;
 
         //HasMovedThisRound = true;
@@ -99,23 +100,13 @@ public class Checker : MonoBehaviour
         }
     }
 
-    public Node GetFarthestNode(List<Node> path)
+    public Node GetRandomNode(List<Node> path)
     {
-        float positionY = int.MaxValue;
-        Node nodeToReturn = null;
-        foreach (Node node in path)
-        {
-            if(node.PositionInTheWorld.y < positionY)
-                nodeToReturn = node;
-        }
-        return nodeToReturn;
+        return path[Random.Range(0, path.Count)];
     }
 
     private void OnDestroy()
     {
-        UIManager.Instance.UpdateCounters(this);
-
-        if(!isPlayer)
-            GameManager.Instance.enemyCheckers.Remove(this);
+        GameManager.OnCheckerDestroyed?.Invoke(this);
     }
 }
