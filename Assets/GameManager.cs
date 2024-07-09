@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private UIManager UIManager;
 
-    private int WhiteCheckerCounter;
-    private int BlackCheckerCounter;
+    private int whiteCheckerCounter;
+    private int blackCheckerCounter;
 
     [HideInInspector] public List<Checker> enemyCheckers;
 
@@ -71,10 +71,22 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator DetectEndNode()
     {
-        yield return WaitForMouseButtonDown();
+        IEnumerator<bool?> coroutine;
+        yield return coroutine = WaitForMouseButtonDown();
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit;
+
+        if (coroutine.Current != null)
+        {
+            if (coroutine.Current.Value)
+            {
+                ResetTraversableNodes(TurnManager.Instance.traversableNodes);
+                EndNode = null;
+                yield break;
+            }
+        }
+
         if (hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, NodeMask))
         {
             if (hit.collider.gameObject.GetComponent<Node>() != null)
@@ -88,10 +100,19 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator WaitForMouseButtonDown()
+    IEnumerator<bool?> WaitForMouseButtonDown()
     {
         while (!Input.GetMouseButtonDown(0))
-            yield return null;
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                yield return true;
+                yield break;
+            }
+            else
+                yield return null;
+        }
+
     }
 
     public IEnumerator WaitForEscPressed()
@@ -146,7 +167,7 @@ public class GameManager : MonoBehaviour
         if (!checker.IsPlayer)
             enemyCheckers.Add(checker);
 
-        UIManager.InitialiseCounters(checker, ref WhiteCheckerCounter, ref BlackCheckerCounter);
+        UIManager.InitialiseCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
     }
 
     public void UpdateUI(Checker checker)
@@ -154,17 +175,17 @@ public class GameManager : MonoBehaviour
         if (!checker.IsPlayer)
             enemyCheckers.Remove(checker);
 
-        UIManager.UpdateCounters(checker, ref WhiteCheckerCounter, ref BlackCheckerCounter);
+        UIManager.UpdateCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
     }
 
     public void EndGame()
     {
-        if (WhiteCheckerCounter <= 0)
+        if (whiteCheckerCounter <= 0)
         {
             Debug.Log("you lost");
             UIManager.OpenEndgameScreen(false);
         }
-        else if (BlackCheckerCounter <= 0)
+        else if (blackCheckerCounter <= 0)
         {
             Debug.Log("you won");
             UIManager.OpenEndgameScreen(true);

@@ -60,6 +60,12 @@ public class TurnManager : MonoBehaviour
         if (checker.IsPlayer)
         {
             yield return GameManager.Instance.DetectEndNode();
+            if (GameManager.Instance.EndNode == null)
+            {
+                StartCoroutine(PlayerMoveSelection());
+                yield break;
+            }
+
         }
         else
         {

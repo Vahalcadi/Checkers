@@ -18,7 +18,7 @@ public class Checker : MonoBehaviour
         GameManager.OnCheckerInitialisation?.Invoke(this);
     }
 
-    public virtual IEnumerator Move()
+    public IEnumerator Move()
     {
         //List<Node> path = Graph.Instance.FindPath(GameManager.Instance.CurrentNode, GameManager.Instance.EndNode);
 

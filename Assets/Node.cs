@@ -20,7 +20,7 @@ public class Node : MonoBehaviour
             else
             {
                 edge.SetNodeA(this);
-                edge.NodeB.GetAlreadyExistingEdges(edge);
+                edge.NodeB.AddAlreadyExistingEdges(edge);
             }
         }
     }
@@ -33,7 +33,7 @@ public class Node : MonoBehaviour
             return edge.NodeA;
     }
 
-    public void GetAlreadyExistingEdges(Edge edge)
+    public void AddAlreadyExistingEdges(Edge edge)
     {
         bool canAdd = true;
         foreach (var e in edges)

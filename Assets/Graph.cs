@@ -144,7 +144,6 @@ public class PathNode
 
     //public bool isTraversable = false;
 
-    public int FValue { get { return gValue + hValue; } }
     public Vector2 Position { get { return node.PositionInTheWorld; } }
     public List<Edge> Edges { get { return node.Edges; } }
     public Node Node { get { return node; } }
