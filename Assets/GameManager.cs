@@ -45,17 +45,11 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K) && TurnManager.Instance.gameState != GameState.EndGame)
+        if (Input.GetKeyDown(KeyCode.K) && CurrentlyMovingChecker == null && TurnManager.Instance.gameState != GameState.EndGame)
             commandProcessor.Undo();
 
-        /*if (Input.GetKeyDown(KeyCode.L) && TurnManager.Instance.gameState != GameState.EndGame)
+        if (Input.GetKeyDown(KeyCode.L) && CurrentlyMovingChecker == null && TurnManager.Instance.gameState != GameState.EndGame)
             commandProcessor.UndoAll();
-
-        if (Input.GetKeyDown(KeyCode.G) && TurnManager.Instance.gameState != GameState.EndGame)
-            commandProcessor.Redo();
-
-        if (Input.GetKeyDown(KeyCode.H) && TurnManager.Instance.gameState != GameState.EndGame)
-            commandProcessor.RedoAll();*/
     }
 
     public IEnumerator DetectChecker()

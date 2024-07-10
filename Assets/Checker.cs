@@ -26,7 +26,13 @@ public class Checker : MonoBehaviour
         GameManager.Instance.CurrentNode.CheckerInThisNode = null;
         //yield return MoveEachNode(GameManager.Instance.EndNode);
 
-        command = new MoveCommand<Transform>(transform, GameManager.Instance.EndNode, GameManager.Instance.CurrentNode, TurnManager.Instance.gameState, lerpDuration);
+        GameState state;
+        if (isPlayer)
+            state = GameState.PlayerMove;
+        else
+            state = GameState.EnemyMove;
+
+        command = new MoveCommand<Transform>(transform, GameManager.Instance.EndNode, GameManager.Instance.CurrentNode, state, lerpDuration);
         yield return GameManager.Instance.commandProcessor.Execute(command);
 
         GameManager.Instance.CurrentNode = GameManager.Instance.EndNode;

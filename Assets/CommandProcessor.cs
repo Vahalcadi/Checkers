@@ -30,23 +30,4 @@ public class CommandProcessor
             Undo();
         }
     }
-
-    public void Redo()
-    {
-        ICommand command;
-        if (redoCommands.TryPop(out command))
-        {
-            Time.timeScale = 1;
-            commands.Push(command);
-            command.Execute();
-        }
-    }
-
-    public void RedoAll()
-    {
-        while (redoCommands.Count > 0)
-        {
-            Redo();
-        }
-    }
 }
