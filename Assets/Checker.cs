@@ -12,6 +12,8 @@ public class Checker : MonoBehaviour
     public int movement;
     [SerializeField] private float lerpDuration;
 
+    MoveCommand<Transform> command;
+
     private void Start()
     {
         IsKing = false;
@@ -20,17 +22,13 @@ public class Checker : MonoBehaviour
 
     public IEnumerator Move()
     {
-        //List<Node> path = Graph.Instance.FindPath(GameManager.Instance.CurrentNode, GameManager.Instance.EndNode);
-
-        /*foreach (Node node in path)
-        {
-            Debug.Log("enter Move Player");
-            yield return MoveEachNode(GameManager.Instance.EndNode);
-        }*/
-
         GameManager.Instance.CurrentlyMovingChecker = this;
         GameManager.Instance.CurrentNode.CheckerInThisNode = null;
-        yield return MoveEachNode(GameManager.Instance.EndNode);
+        //yield return MoveEachNode(GameManager.Instance.EndNode);
+
+        command = new MoveCommand<Transform>(transform, GameManager.Instance.EndNode, GameManager.Instance.CurrentNode, TurnManager.Instance.gameState, lerpDuration);
+        yield return GameManager.Instance.commandProcessor.Execute(command);
+
         GameManager.Instance.CurrentNode = GameManager.Instance.EndNode;
         GameManager.Instance.EndNode.CheckerInThisNode = this;
         GameManager.Instance.CurrentlyMovingChecker = null;
@@ -39,27 +37,9 @@ public class Checker : MonoBehaviour
             IsKing = true;
         else if (!isPlayer && transform.position.y == 0)
             IsKing = true;
-
-        //HasMovedThisRound = true;
     }
 
-    public IEnumerator MoveEachNode(Node node)
-    {
-        Vector2 startPos = transform.position;
-        float t = 0;
 
-        Vector2 arrival = new Vector3(node.PositionInTheWorld.x, node.PositionInTheWorld.y);
-
-        float percentage = 0;
-
-        while (percentage <= 1)
-        {
-            yield return null;
-            t += Time.deltaTime;
-            percentage = t / lerpDuration;
-            transform.position = Vector3.Lerp(startPos, arrival, percentage);
-        }
-    }
 
     public Node GetCurrentNode()
     {
@@ -81,7 +61,8 @@ public class Checker : MonoBehaviour
 
                 Graph.Instance.Nodes.Find(n => n.PositionInTheWorld == collisionTransform).CheckerInThisNode = null;
 
-                Destroy(collision.gameObject);
+                command.SetCapturedChecker(collision.gameObject.GetComponent<Checker>());
+                collision.gameObject.SetActive(false);
                 Debug.Log("pawn disabled: " + collision.gameObject.name);
             }
             else if (collision.CompareTag("Player"))
@@ -92,9 +73,8 @@ public class Checker : MonoBehaviour
 
                 Graph.Instance.Nodes.Find(n => n.PositionInTheWorld == collisionTransform).CheckerInThisNode = null;
 
+                command.SetCapturedChecker(collision.gameObject.GetComponent<Checker>());
                 collision.gameObject.SetActive(false);
-                Destroy(collision.gameObject);
-
                 Debug.Log("pawn disabled: " + collision.gameObject.name);
             }
         }
@@ -105,7 +85,7 @@ public class Checker : MonoBehaviour
         return path[Random.Range(0, path.Count)];
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         GameManager.OnCheckerDestroyed?.Invoke(this);
     }

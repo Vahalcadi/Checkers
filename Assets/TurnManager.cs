@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 public enum GameState
 {
-    NoAction, Move, Pass, Busy
+    NoAction, PlayerMove, EnemyMove, Pass, Busy, EndGame
 }
 public class TurnManager : MonoBehaviour
 {
     public static TurnManager Instance;
-    private GameState gameState;
+    public GameState gameState;
     [HideInInspector] public List<Node> traversableNodes = new List<Node>();
     public Checker CurrentChecker { get; set; }
 
@@ -27,13 +27,14 @@ public class TurnManager : MonoBehaviour
 
     public IEnumerator PlayerMoveSelection()
     {
-        gameState = GameState.Move;
+        if (gameState == GameState.EndGame)
+            yield break;
+
+        gameState = GameState.PlayerMove;
 
         yield return GameManager.Instance.DetectChecker();
 
         traversableNodes = GameManager.Instance.GetTraversableNodes(CurrentChecker);
-
-        gameState = GameState.Busy;
 
         yield return CheckValidEndNode(CurrentChecker);
 
@@ -43,15 +44,22 @@ public class TurnManager : MonoBehaviour
 
     public IEnumerator EnemyMoveSelection()
     {
-        gameState = GameState.Move;
+        if (gameState == GameState.EndGame)
+            yield break;
+
+        gameState = GameState.EnemyMove;
 
         traversableNodes = GameManager.Instance.EnemySelectRandomMoveablePawn();
-
-        gameState = GameState.Busy;
 
         yield return CheckValidEndNode(CurrentChecker);
 
         gameState = GameState.NoAction;
+    }
+
+    public IEnumerator EnemyMoveSelectionAfterClick()
+    {
+        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+        StartCoroutine(EnemyMoveSelection());
     }
 
 
@@ -99,5 +107,15 @@ public class TurnManager : MonoBehaviour
         {
             yield return CheckValidEndNode(checker);
         }
+    }
+
+    public void RestartFromState(GameState state)
+    {
+        StopAllCoroutines();
+
+        if (state == GameState.PlayerMove)
+            StartCoroutine(PlayerMoveSelection());
+        else if (state == GameState.EnemyMove)
+            StartCoroutine(EnemyMoveSelectionAfterClick());
     }
 }

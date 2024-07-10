@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject EndGameScreen;
     [SerializeField] private TextMeshProUGUI ResultText;
 
-    public void InitialiseCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
+    public void AddCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
     {
         if (checker.IsPlayer)
         {
@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
+    public void RemoveCounters(Checker checker, ref int WhiteCheckerCounter, ref int BlackCheckerCounter)
     {
         if (checker.IsPlayer)
         {

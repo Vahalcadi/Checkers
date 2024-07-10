@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public static Action<Checker> OnCheckerDestroyed;
 
     public static GameManager Instance;
+    public CommandProcessor commandProcessor;
+
     [SerializeField] private Color traversableColour;
     [SerializeField] private Color defaultColour;
     [SerializeField] private Color endNodeSelectedColour;
@@ -34,6 +36,7 @@ public class GameManager : MonoBehaviour
         else
             Instance = this;
 
+        commandProcessor = new CommandProcessor();
     }
 
     private void Start()
@@ -42,11 +45,17 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        /*if (Input.GetMouseButtonDown(0))
-        {
-            //EndNode = GetClickedNode(out RaycastHit hit);
-            DetectEndNode();
-        }*/
+        if (Input.GetKeyDown(KeyCode.K) && TurnManager.Instance.gameState != GameState.EndGame)
+            commandProcessor.Undo();
+
+        /*if (Input.GetKeyDown(KeyCode.L) && TurnManager.Instance.gameState != GameState.EndGame)
+            commandProcessor.UndoAll();
+
+        if (Input.GetKeyDown(KeyCode.G) && TurnManager.Instance.gameState != GameState.EndGame)
+            commandProcessor.Redo();
+
+        if (Input.GetKeyDown(KeyCode.H) && TurnManager.Instance.gameState != GameState.EndGame)
+            commandProcessor.RedoAll();*/
     }
 
     public IEnumerator DetectChecker()
@@ -167,15 +176,23 @@ public class GameManager : MonoBehaviour
         if (!checker.IsPlayer)
             enemyCheckers.Add(checker);
 
-        UIManager.InitialiseCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
+        UIManager.AddCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
     }
 
-    public void UpdateUI(Checker checker)
+    public void RemoveCounterUI(Checker checker)
     {
         if (!checker.IsPlayer)
             enemyCheckers.Remove(checker);
 
-        UIManager.UpdateCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
+        UIManager.RemoveCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
+    }
+
+    public void AddCounterUI(Checker checker)
+    {
+        if (!checker.IsPlayer)
+            enemyCheckers.Add(checker);
+
+        UIManager.AddCounters(checker, ref whiteCheckerCounter, ref blackCheckerCounter);
     }
 
     public void EndGame()
@@ -184,11 +201,13 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("you lost");
             UIManager.OpenEndgameScreen(false);
+            TurnManager.Instance.gameState = GameState.EndGame;
         }
         else if (blackCheckerCounter <= 0)
         {
             Debug.Log("you won");
             UIManager.OpenEndgameScreen(true);
+            TurnManager.Instance.gameState = GameState.EndGame;
         }
     }
 
@@ -224,12 +243,12 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         OnCheckerInitialisation += SetCheckersUI;
-        OnCheckerDestroyed += UpdateUI;
+        OnCheckerDestroyed += RemoveCounterUI;
     }
 
     private void OnDisable()
     {
         OnCheckerInitialisation -= SetCheckersUI;
-        OnCheckerDestroyed -= UpdateUI;
+        OnCheckerDestroyed -= RemoveCounterUI;
     }
 }
